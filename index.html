@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>俞章喆 · 计算机科学与技术 | 个人展示页</title>
+<meta name="description" content="俞章喆 · 上海杉达学院计算机科学与技术专业学生 · 熟练 C 语言与 Python · 个人能力展示" />
+<style>
+  /* ============================================================
+     1. 设计变量
+     ============================================================ */
+  :root {
+    --bg:            #050914;
+    --bg-soft:       #0a1024;
+    --panel:         rgba(255, 255, 255, 0.035);
+    --panel-strong:  rgba(255, 255, 255, 0.06);
+    --line:          rgba(120, 160, 255, 0.14);
+    --line-strong:   rgba(120, 200, 255, 0.35);
+
+    --text:          #e8eefc;
+    --text-dim:      #9aa8c7;
+    --text-faint:    #6b7898;
+
+    --cyan:          #22d3ee;
+    --blue:          #3b82f6;
+    --violet:        #8b5cf6;
+    --accent:        #38bdf8;
+    --accent-2:      #22d3ee;
+
+    --grad:          linear-gradient(120deg, #38bdf8 0%, #22d3ee 45%, #8b5cf6 100%);
+    --glow:          0 0 24px rgba(56, 189, 248, 0.28);
+
+    --radius:        16px;
+    --maxw:          1160px;
+
+    --mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(900px 600px at 12% 8%,  rgba(59, 130, 246, 0.16), transparent 62%),
+      radial-gradient(800px 520px at 88% 22%, rgba(139, 92, 246, 0.14), transparent 60%),
+      radial-gradient(700px 700px at 50% 100%, rgba(34, 211, 238, 0.10), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #particles {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  main, header, footer { position: relative; z-index: 1; }
+
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; }
+
+  .wrap { width: min(100% - 48px, var(--maxw)); margin-inline: auto; }
+
+  ::selection { background: rgba(56, 189, 248, 0.32); color: #fff; }
+
+  /* ============================================================
+     2. 通用组件
+     ============================================================ */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent-2);
+    padding: 6px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.06);
+  }
+  .eyebrow::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
+  }
+
+  .section { padding: 96px 0; }
+  .section-head { margin-bottom: 48px; }
+  .section-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700; letter-spacing: -0.01em;
+    margin: 18px 0 12px;
+  }
+  .section-title .num {
+    font-family: var(--mono);
+    color: var(--accent); font-size: 0.62em; margin-right: 10px; opacity: 0.9;
+  }
+  .section-sub { color: var(--text-dim); max-width: 62ch; font-size: 15.5px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(8px);
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono); font-size: 11.5px;
+    padding: 4px 10px; border-radius: 6px;
+    color: #bfe6ff;
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    letter-spacing: 0.03em;
+  }
+
+  /* 滚动进度条 */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--grad); z-index: 100;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+  }
+
+  /* ============================================================
+     3. 导航
+     ============================================================ */
+  header.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+    transition: background .3s, border-color .3s, backdrop-filter .3s;
+    border-bottom: 1px solid transparent;
+  }
+  header.nav.scrolled {
+    background: rgba(5, 9, 20, 0.78);
+    border-bottom-color: var(--line);
+    backdrop-filter: blur(14px);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .brand {
+    font-family: var(--mono); font-weight: 700; font-size: 17px;
+    letter-spacing: 0.02em;
+  }
+  .brand .dot { color: var(--cyan); }
+  .nav-links { display: flex; gap: 6px; align-items: center; }
+  .nav-links a {
+    font-size: 14px; color: var(--text-dim);
+    padding: 8px 14px; border-radius: 8px;
+    transition: color .2s, background .2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--panel-strong); }
+  .nav-links a.active { color: var(--accent); background: rgba(56, 189, 248, 0.10); }
+
+  .nav-toggle {
+    display: none; width: 40px; height: 40px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); color: var(--text); cursor: pointer;
+    font-size: 18px; line-height: 1;
+  }
+
+  /* ============================================================
+     4. Hero
+     ============================================================ */
+  .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.35fr 0.65fr;
+    gap: 56px; align-items: center; width: 100%;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6.4vw, 74px);
+    line-height: 1.08; font-weight: 800; letter-spacing: -0.03em;
+    margin: 22px 0 6px;
+  }
+  .hero h1 .grad {
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .role {
+    font-family: var(--mono); font-size: clamp(15px, 2vw, 19px);
+    color: var(--text-dim); margin-bottom: 22px; min-height: 1.8em;
+  }
+  .hero .role .cursor {
+    display: inline-block; width: 9px; background: var(--cyan);
+    margin-left: 3px; animation: blink 1s steps(2) infinite;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero p.lead { color: var(--text-dim); max-width: 56ch; font-size: 16.5px; }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 12px 24px; border-radius: 10px;
+    font-size: 14.5px; font-weight: 600;
+    border: 1px solid transparent; cursor: pointer;
+    transition: transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: var(--grad); color: #04101c;
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.28);
+  }
+  .btn-primary:hover { box-shadow: 0 14px 38px rgba(56, 189, 248, 0.42); }
+  .btn-ghost {
+    border-color: var(--line-strong); color: var(--text); background: var(--panel);
+  }
+  .btn-ghost:hover { background: var(--panel-strong); }
+
+  .hero-social { display: flex; gap: 12px; margin-top: 30px; }
+  .hero-social a {
+    width: 40px; height: 40px; display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 10px;
+    color: var(--text-dim); font-family: var(--mono); font-size: 13px;
+    transition: all .2s;
+  }
+  .hero-social a:hover {
+    color: var(--cyan); border-color: var(--line-strong);
+    transform: translateY(-3px); box-shadow: var(--glow);
+  }
+
+  /* 头像卡 */
+  .avatar-card {
+    position: relative; padding: 30px; text-align: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+  .avatar-card::after {
+    content: ""; position: absolute; inset: -1px; border-radius: 22px;
+    background: var(--grad); opacity: .22; z-index: -1; filter: blur(14px);
+  }
+  .avatar {
+    width: 128px; height: 128px; margin: 0 auto 18px;
+    border-radius: 50%; display: grid; place-items: center;
+    font-size: 44px; font-weight: 800; color: #04101c;
+    background: var(--grad);
+    box-shadow: 0 0 34px rgba(56, 189, 248, 0.45);
+    position: relative;
+  }
+  .avatar::before {
+    content: ""; position: absolute; inset: -7px; border-radius: 50%;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    animation: spin 9s linear infinite;
+    border-top-color: transparent; border-right-color: transparent;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .avatar-card h3 { font-size: 20px; font-weight: 700; }
+  .avatar-card .muted { color: var(--text-faint); font-size: 13.5px; margin-top: 4px; }
+  .avatar-card .hr {
+    height: 1px; background: var(--line); margin: 18px 0;
+  }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-row div b {
+    display: block; font-family: var(--mono); font-size: 20px;
+    background: var(--grad); -webkit-background-clip: text;
+    background-clip: text; color: transparent;
+  }
+  .stat-row div span { font-size: 11.5px; color: var(--text-faint); }
+
+  /* ============================================================
+     5. 关于
+     ============================================================ */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .about-text p + p { margin-top: 14px; }
+  .about-text p { color: var(--text-dim); font-size: 15.8px; }
+  .about-text strong { color: var(--text); font-weight: 600; }
+
+  .fact-list { display: grid; gap: 12px; }
+  .fact {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 18px; border-radius: 12px;
+    background: var(--panel); border: 1px solid var(--line);
+    transition: transform .25s, border-color .25s;
+  }
+  .fact:hover { transform: translateX(6px); border-color: var(--line-strong); }
+  .fact .ico {
+    width: 38px; height: 38px; flex: 0 0 38px; border-radius: 10px;
+    display: grid; place-items: center; font-size: 17px;
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+  }
+  .fact h4 { font-size: 15px; font-weight: 600; }
+  .fact p { font-size: 13.5px; color: var(--text-faint); }
+
+  /* ============================================================
+     6. 技能
+     ============================================================ */
+  .skills-grid {
+    display: grid; grid-template-columns: 420px 1fr; gap: 32px; align-items: start;
+  }
+  .radar-card { padding: 24px; text-align: center; }
+  .radar-card h4 { font-size: 15px; margin-bottom: 6px; }
+  .radar-card .muted { font-size: 12.5px; color: var(--text-faint); margin-bottom: 10px; }
+  #radar { width: 100%; max-width: 380px; height: auto; }
+
+  .skill-groups { display: grid; gap: 26px; }
+  .skill-group h4 {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+    color: var(--text); display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .skill-group h4::before {
+    content: ""; width: 14px; height: 2px; background: var(--grad); border-radius: 2px;
+  }
+  .skill-group.hot h4::after {
+    content: "优势";
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    padding: 2px 9px; border-radius: 999px; color: #04101c;
+    background: var(--grad); letter-spacing: 0.06em;
+  }
+  .skill-group.hot .bar-fill {
+    background: linear-gradient(120deg, #38bdf8 0%, #22d3ee 40%, #a78bfa 100%);
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.55);
+  }
+  .bar { margin-bottom: 13px; }
+  .bar-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13.5px; margin-bottom: 6px;
+  }
+  .bar-top span:last-child { font-family: var(--mono); color: var(--accent); font-size: 12.5px; }
+  .bar-track {
+    height: 7px; border-radius: 99px;
+    background: rgba(255, 255, 255, 0.07); overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; width: 0; border-radius: 99px;
+    background: var(--grad); box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    transition: width 1.3s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  /* ============================================================
+     7. 荣誉 + 时间线
+     ============================================================ */
+  .awards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .award {
+    display: flex; gap: 16px; align-items: center;
+    padding: 20px; border-radius: 14px;
+    background: var(--panel); border: 1px solid var(--line);
+    transition: transform .25s, border-color .25s;
+  }
+  .award:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+  .award .medal {
+    width: 44px; height: 44px; flex: 0 0 44px; border-radius: 12px;
+    display: grid; place-items: center; font-size: 20px;
+    background: linear-gradient(140deg, rgba(250, 204, 21, .18), rgba(244, 114, 182, .14));
+    border: 1px solid rgba(250, 204, 21, .3);
+  }
+  .award h4 { font-size: 15px; font-weight: 600; }
+  .award p { font-size: 12.8px; color: var(--text-faint); }
+
+  .timeline { position: relative; padding-left: 30px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 1px;
+    background: linear-gradient(180deg, var(--accent), var(--violet), transparent);
+  }
+  .tl-item { position: relative; padding-bottom: 30px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -30px; top: 7px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--accent);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+  }
+  .tl-item time {
+    font-family: var(--mono); font-size: 12.5px; color: var(--accent); letter-spacing: .04em;
+  }
+  .tl-item h4 { font-size: 16.5px; font-weight: 650; margin: 4px 0 6px; }
+  .tl-item p { font-size: 14.2px; color: var(--text-dim); max-width: 70ch; }
+
+  /* ============================================================
+     9. 联系
+     ============================================================ */
+  .cta-panel {
+    padding: 54px 48px; border-radius: 22px; text-align: center;
+    background:
+      radial-gradient(600px 300px at 50% 0%, rgba(56, 189, 248, .14), transparent 70%),
+      var(--panel);
+    border: 1px solid var(--line-strong);
+  }
+  .cta-panel h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 750; letter-spacing: -0.02em; }
+  .cta-panel p { color: var(--text-dim); margin: 14px auto 30px; max-width: 54ch; }
+  .contact-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px; margin-top: 34px; text-align: left;
+    max-width: 640px; margin-inline: auto;
+  }
+  .contact-item {
+    padding: 16px 18px; border-radius: 12px;
+    background: rgba(255, 255, 255, .03); border: 1px solid var(--line);
+    transition: border-color .2s, transform .2s;
+  }
+  .contact-item:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .contact-item span { display: block; font-size: 11.5px; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+  .contact-item b { font-family: var(--mono); font-size: 14px; font-weight: 500; word-break: break-all; }
+
+  footer {
+    padding: 32px 0 40px; border-top: 1px solid var(--line);
+    color: var(--text-faint); font-size: 13px;
+  }
+  .footer-inner { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  /* ============================================================
+     10. 动画 / 响应式
+     ============================================================ */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .avatar-card { max-width: 380px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .radar-card { max-width: 460px; margin-inline: auto; }
+    .about-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .wrap { width: calc(100% - 32px); }
+    .section { padding: 68px 0; }
+    .nav-links {
+      display: none; position: absolute; top: 68px; right: 16px; left: 16px;
+      flex-direction: column; align-items: stretch; gap: 4px;
+      padding: 12px; border-radius: 14px;
+      background: rgba(10, 16, 36, .96); border: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+    .nav-links.open { display: flex; }
+    .nav-toggle { display: grid; place-items: center; }
+    .cta-panel { padding: 38px 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001s !important; transition-duration: .001s !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<canvas id="particles"></canvas>
+
+<!-- ===================== 导航 ===================== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#home">YZ<span class="dot">.</span>DEV</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#about">关于我</a>
+      <a href="#skills">专业能力</a>
+      <a href="#awards">荣誉竞赛</a>
+      <a href="#timeline">成长轨迹</a>
+      <a href="#contact">联系</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== Hero ===================== -->
+  <section class="hero" id="home">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">上海杉达学院 · 计算机科学与技术</span>
+        <h1>你好，我是<br /><span class="grad">俞章喆</span></h1>
+        <div class="role"><span id="typing"></span><span class="cursor">&nbsp;</span></div>
+        <p class="lead">
+          一名把想法写进代码的计算机科学与技术专业本科生。目前以 C 语言与 Python 为主要工具，
+          一边打牢专业基础，一边在学科竞赛里检验自己。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#skills">了解我的能力 →</a>
+          <a class="btn btn-ghost" href="#contact">联系我</a>
+        </div>
+        <div class="hero-social">
+          <a href="mailto:2522816531@qq.com" title="邮箱 2522816531@qq.com">@</a>
+          <a href="tel:19512345121" title="手机 19512345121">TEL</a>
+          <a href="#" title="微信同号 19512345121">WX</a>
+          <a href="#" title="QQ 2522816531">QQ</a>
+        </div>
+      </div>
+
+      <aside class="avatar-card">
+        <div class="avatar">YZ</div>
+        <h3>俞章喆</h3>
+        <div class="muted">本科在读 · 2025 级</div>
+        <div class="hr"></div>
+        <div class="stat-row">
+          <div><b>3</b><span>荣誉奖项</span></div>
+          <div><b>1</b><span>校级奖学金</span></div>
+          <div><b>CET-4</b><span>英语四级</span></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== 关于 ===================== -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">01 / About</span>
+        <h2 class="section-title"><span class="num">01.</span>关于我</h2>
+        <p class="section-sub">
+          从第一行 <code>Hello World</code> 到能独立写出一个完整的程序，我把兴趣一点点变成了能力。
+        </p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            我是 <strong>上海杉达学院计算机科学与技术专业</strong> 2025 级本科生，
+            主修方向覆盖程序设计、数据结构与算法、操作系统、计算机网络、数据库系统。
+          </p>
+          <p>
+            我习惯用「把知识写成能跑起来的程序」来检验学习成果：从 C 语言课设到参加校级程序设计竞赛，
+            每一步都要求自己不只是看懂算法，而是真正把它实现出来并跑通。
+          </p>
+          <p>
+            <strong>熟练使用 C 语言与 Python，专业基础扎实。</strong>
+            接下来的目标是继续打牢基础，多参加学科竞赛、多做出真正能用的东西。
+          </p>
+        </div>
+
+        <div class="fact-list reveal">
+          <div class="fact">
+            <div class="ico">🎓</div>
+            <div>
+              <h4>专业基础扎实</h4>
+              <p>数据结构、操作系统、计网、数据库等核心课程成绩稳定在专业前 15%</p>
+            </div>
+          </div>
+          <div class="fact">
+            <div class="ico">🧩</div>
+            <div>
+              <h4>熟练 C 语言</h4>
+              <p>熟悉指针、结构体、文件操作与常见算法实现，获校程序设计竞赛三等奖</p>
+            </div>
+          </div>
+          <div class="fact">
+            <div class="ico">🐍</div>
+            <div>
+              <h4>掌握 Python</h4>
+              <p>能用 Python 完成脚本编写、数据处理与小型程序的快速开发</p>
+            </div>
+          </div>
+          <div class="fact">
+            <div class="ico">🤝</div>
+            <div>
+              <h4>协作与表达</h4>
+              <p>在课程项目中喜欢提出一些独特的见解</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 技能 ===================== -->
+  <section class="section" id="skills">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">02 / Skills</span>
+        <h2 class="section-title"><span class="num">02.</span>专业能力</h2>
+        <p class="section-sub">
+          下面是我对自己能力结构的拆解。左侧是自评雷达，右侧是具体项的熟练度。
+          <strong style="color:var(--text)">数理基础与逻辑思维是我的优势项</strong>——数学、物理功底扎实，
+          擅长把复杂问题拆成可执行的步骤，这也让我在算法与编程上上手更快。
+        </p>
+      </div>
+
+      <div class="skills-grid">
+        <div class="card radar-card reveal">
+          <h4>能力结构雷达</h4>
+          <p class="muted">满分 100 · 自评 · 数学与物理、逻辑思维为优势维度</p>
+          <canvas id="radar" width="640" height="640"></canvas>
+        </div>
+
+        <div class="skill-groups reveal" id="skillGroups"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 荣誉 ===================== -->
+  <section class="section" id="awards">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">03 / Awards</span>
+        <h2 class="section-title"><span class="num">03.</span>荣誉与竞赛</h2>
+        <p class="section-sub">学科竞赛、奖学金与专业能力认证。</p>
+      </div>
+      <div class="awards" id="awardList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 时间线 ===================== -->
+  <section class="section" id="timeline">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">04 / Journey</span>
+        <h2 class="section-title"><span class="num">04.</span>成长轨迹</h2>
+        <p class="section-sub">从入学到现在，每一步都在往「能独立交付」靠近。</p>
+      </div>
+      <div class="timeline" id="timelineList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 联系 ===================== -->
+  <section class="section" id="contact">
+    <div class="wrap">
+      <div class="cta-panel reveal">
+        <span class="eyebrow">05 / Contact</span>
+        <h2 style="margin-top:18px">一起做点有意思的东西</h2>
+        <p>
+          如果你正在找一个靠谱的实习生 / 项目搭档，或者只是想聊聊技术，欢迎随时联系我。
+        </p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn-primary" href="mailto:2522816531@qq.com">发送邮件</a>
+          <a class="btn btn-ghost" href="#">下载简历 PDF</a>
+        </div>
+        <div class="contact-grid" id="contactList"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>© 2026 俞章喆 · 上海杉达学院 计算机科学与技术</span>
+    <span>Built with HTML / CSS / Vanilla JS</span>
+  </div>
+</footer>
+
+<script>
+/* ================================================================
+   内容配置：把这里替换成你的真实信息即可，页面会自动重新渲染
+   ================================================================ */
+const PROFILE = {
+  radar: [
+    { label: 'C 语言',   value: 85 },
+    { label: 'Python',   value: 78 },
+    { label: '数据结构',  value: 76 },
+    { label: '数学与物理', value: 90 },
+    { label: '逻辑思维',  value: 92 },
+    { label: '调试排错',  value: 80 },
+    { label: '专业理论',  value: 82 },
+    { label: '自学能力',  value: 88 }
+  ],
+  skillGroups: [
+    {
+      title: '编程语言',
+      items: [
+        { name: 'C 语言',  level: 85 },
+        { name: 'Python',  level: 78 }
+      ]
+    },
+    {
+      title: '数理基础',
+      hot: true,
+      items: [
+        { name: '高等数学 / 微积分',   level: 92 },
+        { name: '大学物理',            level: 88 },
+        { name: '线性代数',            level: 85 },
+        { name: '离散数学与数理逻辑',   level: 86 }
+      ]
+    },
+    {
+      title: '逻辑思维与工程能力',
+      items: [
+        { name: '逻辑推理与问题拆解',   level: 92 },
+        { name: '算法与数据结构',       level: 76 },
+        { name: '数学建模能力',         level: 84 },
+        { name: '代码调试与排错',       level: 80 }
+      ]
+    }
+  ],
+  awards: [
+    { icon: '🏆', title: '上海杉达学院程序设计竞赛（C 语言）三等奖', desc: '校级学科竞赛' },
+    { icon: '🎖️', title: '校级奖学金', desc: '学业成绩与综合表现' },
+    { icon: '🌐', title: 'CET-4 证书', desc: '全国大学英语四级' }
+  ],
+  timeline: [
+    {
+      time: '2025.09',
+      title: '入学 · 计算机科学与技术专业',
+      desc: '进入上海杉达学院，开始系统学习 C 语言程序设计、高等数学与专业基础课程，打下编程基本功。'
+    },
+    {
+      time: '2026.07',
+      title: '开始参加学科竞赛',
+      desc: '以赛促学，把课堂上的算法与数据结构知识放进真实的竞赛题目里检验，持续积累实战经验。'
+    }
+  ],
+  contacts: [
+    { k: 'Email',      v: '2522816531@qq.com' },
+    { k: '手机 / 微信', v: '19512345121（微信同号）' }
+  ]
+};
+
+/* ================================================================
+   渲染逻辑
+   ================================================================ */
+const $ = (s) => document.querySelector(s);
+
+/* --- 技能条 --- */
+function renderSkills() {
+  const box = $('#skillGroups');
+  box.innerHTML = PROFILE.skillGroups.map(g => `
+    <div class="skill-group${g.hot ? ' hot' : ''}">
+      <h4>${g.title}</h4>
+      ${g.items.map(i => `
+        <div class="bar">
+          <div class="bar-top"><span>${i.name}</span><span>${i.level}</span></div>
+          <div class="bar-track">
+            <div class="bar-fill" data-level="${i.level}"></div>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+/* --- 荣誉 --- */
+function renderAwards() {
+  $('#awardList').innerHTML = PROFILE.awards.map(a => `
+    <div class="award">
+      <div class="medal">${a.icon}</div>
+      <div>
+        <h4>${a.title}</h4>
+        <p>${a.desc}</p>
+      </div>
+    </div>`).join('');
+}
+
+/* --- 时间线 --- */
+function renderTimeline() {
+  $('#timelineList').innerHTML = PROFILE.timeline.map(t => `
+    <div class="tl-item">
+      <time>${t.time}</time>
+      <h4>${t.title}</h4>
+      <p>${t.desc}</p>
+    </div>`).join('');
+}
+
+/* --- 联系方式 --- */
+function renderContacts() {
+  $('#contactList').innerHTML = PROFILE.contacts.map(c => `
+    <div class="contact-item">
+      <span>${c.k}</span><b>${c.v}</b>
+    </div>`).join('');
+}
+
+/* --- 雷达图 --- */
+function drawRadar() {
+  const cv = $('#radar');
+  const ctx = cv.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const cssSize = 360;
+  cv.width = cssSize * dpr;
+  cv.height = cssSize * dpr;
+  cv.style.width = cssSize + 'px';
+  cv.style.height = cssSize + 'px';
+  ctx.scale(dpr, dpr);
+
+  const data = PROFILE.radar;
+  const cx = cssSize / 2, cy = cssSize / 2, R = cssSize * 0.30;
+  const n = data.length;
+  const angle = i => (Math.PI * 2 * i) / n - Math.PI / 2;
+
+  ctx.clearRect(0, 0, cssSize, cssSize);
+
+  // 网格
+  for (let r = 1; r <= 5; r++) {
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a = angle(i), rr = (R * r) / 5;
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = r === 5 ? 'rgba(120,180,255,.35)' : 'rgba(120,180,255,.13)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 轴线
+  for (let i = 0; i < n; i++) {
+    const a = angle(i);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    ctx.strokeStyle = 'rgba(120,180,255,.16)';
+    ctx.stroke();
+  }
+
+  // 数据多边形
+  ctx.beginPath();
+  data.forEach((d, i) => {
+    const a = angle(i), rr = (R * d.value) / 100;
+    const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.closePath();
+  const g = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+  g.addColorStop(0, 'rgba(56,189,248,.55)');
+  g.addColorStop(1, 'rgba(139,92,246,.42)');
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(34,211,238,.95)';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = 'rgba(56,189,248,.8)';
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // 顶点
+  data.forEach((d, i) => {
+    const a = angle(i), rr = (R * d.value) / 100;
+    const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+    ctx.beginPath();
+    ctx.arc(x, y, 3.4, 0, Math.PI * 2);
+    ctx.fillStyle = '#22d3ee';
+    ctx.fill();
+  });
+
+  // 标签
+  const LABEL_FONT = '500 12px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.font = LABEL_FONT;
+  ctx.fillStyle = '#9aa8c7';
+  data.forEach((d, i) => {
+    const a = angle(i), rr = R + 24;
+    const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.label, x, y - 7);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '600 11.5px "JetBrains Mono", monospace';
+    ctx.fillText(String(d.value), x, y + 8);
+    ctx.font = LABEL_FONT;
+    ctx.fillStyle = '#9aa8c7';
+  });
+}
+
+/* ================================================================
+   交互
+   ================================================================ */
+/* 打字机 */
+function typeWriter(el, words) {
+  let wi = 0, ci = 0, del = false;
+  const tick = () => {
+    const w = words[wi];
+    ci += del ? -1 : 1;
+    el.textContent = w.slice(0, ci);
+    let wait = del ? 45 : 95;
+    if (!del && ci === w.length) { del = true; wait = 1700; }
+    else if (del && ci === 0) { del = false; wi = (wi + 1) % words.length; wait = 320; }
+    setTimeout(tick, wait);
+  };
+  tick();
+}
+
+/* 滚动：进度条 / 导航态 / 导航高亮 */
+function initScroll() {
+  const nav = $('#nav'), bar = $('#progress');
+  const links = [...document.querySelectorAll('.nav-links a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+
+  const onScroll = () => {
+    const st = window.scrollY;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h > 0 ? (st / h) * 100 : 0) + '%';
+    nav.classList.toggle('scrolled', st > 20);
+
+    let idx = -1;
+    secs.forEach((s, i) => { if (s && s.offsetTop - 140 <= st) idx = i; });
+    links.forEach((a, i) => a.classList.toggle('active', i === idx));
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* 滚动入场 */
+function initReveal() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('.bar-fill').forEach((b, i) => {
+        setTimeout(() => { b.style.width = b.dataset.level + '%'; }, i * 70);
+      });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.16 });
+
+  document.querySelectorAll('.reveal, .award, .tl-item, .fact')
+    .forEach((el, i) => {
+      el.classList.add('reveal');
+      el.style.transitionDelay = Math.min(i % 8, 6) * 40 + 'ms';
+      io.observe(el);
+    });
+}
+
+/* 移动端菜单 */
+function initNav() {
+  const t = $('#navToggle'), l = $('#navLinks');
+  t.addEventListener('click', () => l.classList.toggle('open'));
+  l.addEventListener('click', e => { if (e.target.tagName === 'A') l.classList.remove('open'); });
+}
+
+/* 粒子背景 */
+function initParticles() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = $('#particles');
+  const ctx = cv.getContext('2d');
+  let w, h, pts = [];
+
+  const resize = () => {
+    w = cv.width = window.innerWidth;
+    h = cv.height = window.innerHeight;
+    const count = Math.min(70, Math.floor((w * h) / 22000));
+    pts = Array.from({ length: count }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.28,
+      vy: (Math.random() - 0.5) * 0.28,
+      r: Math.random() * 1.5 + 0.6
+    }));
+  };
+
+  const loop = () => {
+    ctx.clearRect(0, 0, w, h);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(120,190,255,.55)';
+      ctx.fill();
+    });
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.hypot(dx, dy);
+        if (d < 130) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(90,170,255,${0.16 * (1 - d / 130)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(loop);
+  };
+
+  resize();
+  window.addEventListener('resize', resize);
+  loop();
+}
+
+/* 启动 */
+renderSkills();
+renderAwards();
+renderTimeline();
+renderContacts();
+drawRadar();
+initScroll();
+initReveal();
+initNav();
+initParticles();
+typeWriter($('#typing'), ['C / Python 学习者', '校程序设计竞赛三等奖', '计算机科学与技术专业本科生']);
+</script>
+</body>
+</html>
