@@ -110,16 +110,16 @@ def check_evidence(text):
     return []  # 覆盖达标，返回空列表
 
 
-def build_result(errors, checks, evidence_count):
+def build_result(errors, checks, evidence_count, path):
     """构造对外统一返回结构。
 
-    入参：errors 为失败项列表，checks 为已执行的校验项总数，evidence_count 为命中的证据编号个数。
+    入参：errors 为失败项列表，checks 为已执行的校验项总数，evidence_count 为命中的证据编号个数，path 为被校验文件路径。
     出参：dict，形如 {"ok": bool, "data": ..., "error": {"code": str, "msg": str}}。
     失败时的行为：errors 非空时 ok 置 False、error.code 置 PROMPT_INCOMPLETE、msg 拼接全部失败项；不抛异常。
     """
     ok = len(errors) == 0  # 无失败项即判定校验通过
     data = {  # 成功与失败时都给出可核对的统计信息
-        "file": str(PROMPT_FILE),  # 被校验的文件路径
+        "file": str(path),  # 被校验的文件路径
         "checks": checks,  # 本次执行的校验项总数
         "evidence_ids": evidence_count,  # 正文中命中的不同证据编号个数
     }  # data 字典结束
@@ -138,9 +138,10 @@ def main():
     失败时的行为：打印 ok=False 的统一结构并返回 1，不抛出堆栈。
     """
     sys.stdout.reconfigure(encoding="utf-8")  # 强制 UTF-8 输出，避免 Windows 控制台中文乱码
-    text, read_error = read_prompt(PROMPT_FILE)  # 读取提示词全文，失败时拿到中文错误说明
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else PROMPT_FILE  # 新功能：命令行第 1 个参数可指定待校验文件，缺省仍用内置提示词文件
+    text, read_error = read_prompt(target)  # 读取提示词全文，失败时拿到中文错误说明
     if read_error:  # 读取失败时无需继续做内容校验
-        result = build_result([read_error], 0, 0)  # 直接构造失败结构
+        result = build_result([read_error], 0, 0, target)  # 直接构造失败结构
         print(json.dumps(result, ensure_ascii=False, indent=2))  # 打印统一返回结构
         return 1  # 以非零退出码告知调用方
     errors = []  # 累积全部校验失败项
@@ -149,7 +150,7 @@ def main():
     errors += check_evidence(text)  # 校验证据编号覆盖度
     checks = len(SECTIONS) + len(KEYWORDS) + len(ROLES) + len(FORBIDDEN) + 2  # 统计已执行的校验项总数
     found = set(re.findall(r"f\d{2}", text))  # 再次提取编号，仅用于结果统计
-    result = build_result(errors, checks, len(found))  # 构造统一返回结构
+    result = build_result(errors, checks, len(found), target)  # 构造统一返回结构，路径传实际被校验的文件
     print(json.dumps(result, ensure_ascii=False, indent=2))  # 打印统一返回结构
     return 0 if result["ok"] else 1  # 通过返回 0，失败返回 1
 
